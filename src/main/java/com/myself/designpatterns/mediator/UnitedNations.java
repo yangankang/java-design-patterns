@@ -2,10 +2,10 @@ package com.myself.designpatterns.mediator;
 
 /**
  * 联合国机构抽象类
- * @author daniel
  *
+ * @author daniel
  */
 abstract class UnitedNations {
- //声明
- public abstract void declare(String message,Country colleague);
+    //声明
+    public abstract void declare(String message, Country colleague);
 }

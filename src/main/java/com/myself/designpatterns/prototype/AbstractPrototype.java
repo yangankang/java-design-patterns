@@ -2,29 +2,29 @@ package com.myself.designpatterns.prototype;
 
 abstract class AbstractPrototype implements Cloneable {
 
-	String name;
+    String name;
 
-	public AbstractPrototype() {
+    public AbstractPrototype() {
 
-	}
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Object clone() {
-		Object obj = null;
-		try {
-			obj = super.clone();
-		} catch (CloneNotSupportedException e) {
- 			e.printStackTrace();
-		}
-		return obj;
+    public Object clone() {
+        Object obj = null;
+        try {
+            obj = super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return obj;
 
-	}
+    }
 
 }

@@ -1,8 +1,8 @@
 package com.myself.designpatterns.prototype;
 
-public class PrototypeImpl1 extends AbstractPrototype{
-	public PrototypeImpl1(){
-		setName("PrototypeImpl1");
-	}
+public class PrototypeImpl1 extends AbstractPrototype {
+    public PrototypeImpl1() {
+        setName("PrototypeImpl1");
+    }
 
 }

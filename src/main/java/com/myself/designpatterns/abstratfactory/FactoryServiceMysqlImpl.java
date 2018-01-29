@@ -2,15 +2,15 @@ package com.myself.designpatterns.abstratfactory;
 
 public class FactoryServiceMysqlImpl implements FactoryService {
 
-	@Override
-	public UserService getUserService() {
+    @Override
+    public UserService getUserService() {
 
-		return new UserServiceMySqlImpl();
-	}
+        return new UserServiceMySqlImpl();
+    }
 
-	@Override
-	public DepartmentService getDepartmentService() {
-		return new DepartmentServiceMySqlImpl();
-	}
+    @Override
+    public DepartmentService getDepartmentService() {
+        return new DepartmentServiceMySqlImpl();
+    }
 
 }

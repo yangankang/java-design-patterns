@@ -2,12 +2,12 @@ package com.myself.designpatterns.iterator;
 
 /**
  * 聚集抽象类
- * @author daniel
  *
+ * @author daniel
  */
 public abstract class Aggregate {
- //创建迭代器
- public abstract Iterator createIterator();
+    //创建迭代器
+    public abstract Iterator createIterator();
 }
 
 
