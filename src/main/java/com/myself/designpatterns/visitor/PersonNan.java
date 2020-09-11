@@ -11,8 +11,6 @@ public class PersonNan implements Person {
 
     @Override
     public void showTime(Visitor visitor) {
-
-
         visitor.getVersion(this);
     }
 

@@ -23,6 +23,5 @@ public class ZMain {
 
         c1.declare("美国说 我要吃饭");
         c2.declare("伊拉克说 没饭吃喽");
-
     }
 }
