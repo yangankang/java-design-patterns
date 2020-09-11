@@ -76,6 +76,7 @@
  * 将一个请求封装成一个对象，从而让你使用不同的请求把客户端参数化，对请求排队或者记录请求日志，可以提供命令的撤销和恢复功能。
  * 定义三个角色：1、received 真正的命令执行对象 2、Command 3、invoker 使用命令对象的入口
  * 通过调用者调用接受者执行命令，顺序：调用者→命令→接受者。
+ * https://www.cnblogs.com/yulinfeng/p/5940704.html
  * {@link com.myself.designpatterns.command}
  * <p>
  * 访问者模式         Visitor Pattern
@@ -92,6 +93,7 @@
  * 使用场景： 1、可以将一个需要解释执行的语言中的句子表示为一个抽象语法树。
  * 2、一些重复出现的问题可以用一种简单的语言来进行表达。
  * 3、一个简单语法需要解释的场景。
+ * https://www.cnblogs.com/adamjwh/p/10938852.html
  * {@link com.myself.designpatterns.interpreter}
  * <p>
  * 状态模式          State Pattern
