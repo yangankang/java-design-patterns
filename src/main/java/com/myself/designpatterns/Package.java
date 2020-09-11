@@ -95,6 +95,7 @@
  * 3、一个简单语法需要解释的场景。
  * https://www.cnblogs.com/adamjwh/p/10938852.html
  * {@link com.myself.designpatterns.interpreter}
+ * {@link com.myself.designpatterns.interpreter.demo2}
  * <p>
  * 状态模式          State Pattern
  * 当一个对象在状态改变时允许其改变行为，这个对象看起来像改变了其类。
