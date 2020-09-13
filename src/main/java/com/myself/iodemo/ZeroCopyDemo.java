@@ -22,7 +22,7 @@ import java.nio.file.StandardOpenOption;
  * 其实1,2是read，3,4是write
  * 所以说，一共拷贝4次，而且kernel mod和user mod的切换也是4次。
  * <p>
- * Linux 2.1内核开始引入了sendfile函数。省去了将操作系统的read buffer拷贝到程序的buffer，
+ * Linux 2.1内核开始引入了sendfile/splice函数。省去了将操作系统的read buffer拷贝到程序的buffer，
  * 以及从程序buffer拷贝到socket buffer的步骤而是直接将kernel buf 拷贝 到 socket buf。
  * 实际上是把2,3两部步骤整合了。
  * <p>
