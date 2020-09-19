@@ -69,12 +69,12 @@
  * {@link com.myself.designpatterns.iterator}
  * <p>
  * 责任链模式         Chain of Responsibility Pattern
- * 使多个对象有机会处理请求，从而避免了请求的发送者和接收者之间的耦合关系 。将这些对象连成一个链，并沿着这条链传递请求，知道有对象处理它为止。
+ * 使多个对象有机会处理请求，从而避免了请求的发送者和接收者之间的耦合关系 。将这些对象连成一个链，并沿着这条链传递请求，直到有对象处理它为止。
  * {@link com.myself.designpatterns.chainofresponsibility}
  * <p>
  * 命令模式          Command Pattern
  * 将一个请求封装成一个对象，从而让你使用不同的请求把客户端参数化，对请求排队或者记录请求日志，可以提供命令的撤销和恢复功能。
- * 定义三个角色：1、received 真正的命令执行对象 2、Command 3、invoker 使用命令对象的入口
+ * 定义三个角色：1、received  2、Command 3、invoker 使用命令对象的入口
  * 通过调用者调用接受者执行命令，顺序：调用者→命令→接受者。
  * https://www.cnblogs.com/yulinfeng/p/5940704.html
  * {@link com.myself.designpatterns.command}
