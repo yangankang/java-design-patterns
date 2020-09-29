@@ -19,5 +19,8 @@ public class FixPool {
                 System.out.println(2);
             }
         });
+        // service.submit()
+        // service.execute();
+        // service.invokeAll()
     }
 }
