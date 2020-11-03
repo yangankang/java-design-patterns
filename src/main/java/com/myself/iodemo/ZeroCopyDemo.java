@@ -39,7 +39,7 @@ public class ZeroCopyDemo {
     /**
      * 1.利用通道完成文件的复制（非直接缓冲区）
      **/
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
         FileInputStream fis = null;
         FileOutputStream fos = null;
 
@@ -110,10 +110,10 @@ public class ZeroCopyDemo {
      * @param args
      * @throws IOException
      */
-    public static void main2(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         long start = System.currentTimeMillis();
-        FileChannel inChannel2 = FileChannel.open(Paths.get("1.jpg"), StandardOpenOption.READ);
-        FileChannel outChannel2 = FileChannel.open(Paths.get("3.jpg"), StandardOpenOption.WRITE, StandardOpenOption.READ, StandardOpenOption.CREATE);
+        FileChannel inChannel2 = FileChannel.open(Paths.get("/Users/yangankang/Downloads/feature/4L_img@2x.png"), StandardOpenOption.READ);
+        FileChannel outChannel2 = FileChannel.open(Paths.get("/Users/yangankang/Downloads/feature/4L_img@2x.png"), StandardOpenOption.WRITE, StandardOpenOption.READ, StandardOpenOption.CREATE);
 
         //内存映射文件
         MappedByteBuffer inMappedBuf = inChannel2.map(FileChannel.MapMode.READ_ONLY, 0, inChannel2.size());
