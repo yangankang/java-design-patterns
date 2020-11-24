@@ -1,6 +1,5 @@
 package com.myself.lock;
 
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ReentrantLockDemo implements Runnable {

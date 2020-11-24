@@ -1,19 +1,19 @@
 ### 1.事务四大特性(原子、一致、隔离、持久)，事务隔离级别，Spring事务传播级别
 https://www.cnblogs.com/eunice-sun/p/11024584.html
-1) REQUIRED（默认属性）
+1) required（默认属性）
 如果存在一个事务，则支持当前事务。如果没有事务则开启一个新的事务。
 被设置成这个级别时，会为每一个被调用的方法创建一个逻辑事务域。如果前面的方法已经创建了事务，那么后面的方法支持当前的事务，如果当前没有事务会重新建立事务。
-2) MANDATORY
+2) mandatory
 支持当前事务，如果当前没有事务，就抛出异常。
-3) NEVER
+3) never
 以非事务方式执行，如果当前存在事务，则抛出异常。
-4) NOT_SUPPORTED
+4) not_supported
 以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
-5) REQUIRES_NEW
+5) requires_new
 新建事务，如果当前存在事务，把当前事务挂起。
-6) SUPPORTS
+6) supports
 支持当前事务，如果当前没有事务，就以非事务方式执行。
-7) NESTED
+7) nested
 支持当前事务，新增Savepoint点，与当前事务同步提交或回滚。
 嵌套事务一个非常重要的概念就是内层事务依赖于外层事务。外层事务失败时，会回滚内层事务所做的动作。而内层事务操作失败并不会引起外层事务的回滚。
 
@@ -27,6 +27,8 @@ https://www.cnblogs.com/eunice-sun/p/11024584.html
 Redis的过期策略：惰性删除(访问时检查是否过期)、定期删除(定期随机检查) 如果都不行就用内存淘汰机制
 Redis的高可用：主从模式、哨兵模式
 Redis事务机制：通过MULTI、EXEC、WATCH等命令来实现事务机制
+
+抢购超卖：队列、分布式锁、Redis的事务或Lua脚本
 
 ### 3.LRU算法(缓存淘汰算法)
 https://zhuanlan.zhihu.com/p/34989978
@@ -50,7 +52,7 @@ https://blog.csdn.net/oldshaui/article/details/88743085
 https://www.cnblogs.com/qdhxhz/p/11167025.html
 
 ### 7.索引类型(单列索引、组合索引、全文索引、唯一索引、主键索引)、常见mysql面试题
-索引结构来说：B+树、Hash索引、空间数据索引(R-Tree)、全文索引
+索引结构来说：B+树(还可分为聚簇索引和非聚簇索引)、Hash索引、空间数据索引(R-Tree)、全文索引
 重要: https://zhuanlan.zhihu.com/p/214295381
 
 ### 8.偏向锁、轻量级锁、锁粗化、锁消除
@@ -68,6 +70,42 @@ https://www.jianshu.com/p/9cd5212c8841
 https://www.cnblogs.com/fsmly/p/11274572.html
 
 ### 11.Mysql 三大日志文件 binlog(statement/row/statement+row)、redo log、undo log
+binlog
+binlog用于记录数据库执行的写入性操作(不包括查询)信息，以二进制的形式保存在磁盘中。binlog是mysql的逻辑日志，并且由Server层进行记录，
+使用任何存储引擎的mysql数据库都会记录binlog日志。
+(1)逻辑日志：可以简单理解为记录的就是sql语句。
+(2)物理日志：因为mysql数据最终是保存在数据页中的，物理日志记录的就是数据页变更。
+binlog是通过追加的方式进行写入的，可以通过max_binlog_size参数设置每个binlog文件的大小，当文件大小达到给定值之后，会生成新的文件来保存日志。
+
+binlog的存储模式：
+(1)、STATMENT：基于SQL语句的复制(statement-based replication, SBR)，每一条会修改数据的sql语句会记录到binlog中。
+优点：不需要记录每一行的变化，减少了binlog日志量，节约了IO, 从而提高了性能；
+缺点：在某些情况下会导致主从数据不一致，比如执行sysdate()、slepp()等。
+(2)、ROW：基于行的复制(row-based replication, RBR)，不记录每条sql语句的上下文信息，仅需记录哪条数据被修改了。
+优点：不会出现某些特定情况下的存储过程、或function、或trigger的调用和触发无法被正确复制的问题；
+缺点：会产生大量的日志，尤其是alter table的时候会让日志暴涨
+(3)、MIXED：基于STATMENT和ROW两种模式的混合复制(mixed-based replication, MBR)，一般的复制使用STATEMENT模式保存binlog，
+对于STATEMENT模式无法复制的操作使用ROW模式保存binlog
+
+redo log：当做数据修改的时候，不仅在内存中操作，还会在redo log中记录这次操作。当事务提交的时候，会将redo log日志进行刷盘
+(redo log一部分在内存中，一部分在磁盘上)。当数据库宕机重启的时候，会将redo log中的内容恢复到数据库中，再根据undo log和
+binlog内容决定回滚数据还是提交数据。
+其实好处就是将redo log进行刷盘比对数据页刷盘效率高，具体表现如下
+(1)redo log体积小，毕竟只记录了哪一页修改了啥，因此体积小，刷盘快。
+(2)redo log是一直往末尾进行追加，属于顺序IO。效率显然比随机IO来的快。
+
+undo log：名为回滚日志，是实现原子性的关键，当事务回滚时能够撤销所有已经成功执行的sql语句，他需要记录你要回滚的相应日志信息。
+例如:
+(1)当你delete一条数据的时候，就需要记录这条数据的信息，回滚的时候，insert这条旧数据
+(2)当你update一条数据的时候，就需要记录之前的旧值，回滚的时候，根据旧值执行update操作
+(3)当年insert一条数据的时候，就需要这条记录的主键，回滚的时候，根据主键执行delete操作
+undo log记录了这些回滚需要的信息，当事务执行失败或调用了rollback，导致事务需要回滚，便可以利用undo log中的信息将数据回滚到修改之前的样子。
+
+Mysql怎么保证原子性的：undo log
+Mysql怎么保证持久性的：redo log
+Mysql怎么保证隔离性的：利用的是锁和MVCC多版本并发控制机制
+Mysql怎么保证一致性的：数据库通过原子性、隔离性、持久性来保证一致性，剩下的是编码层面保证一致性。
+
 https://zhuanlan.zhihu.com/p/190886874
 https://www.jianshu.com/p/d13b3c98ce30
 
@@ -78,7 +116,19 @@ https://blog.csdn.net/yy339452689/article/details/105865511
 第一范式:数据库表中的字段都是单一属性的，不可再分。
 第二范式:数据库表中不存在非关键字段对任一候选关键字段的部分函数依赖，即符合第二范式
 第三范式:在第二范式的基础上，数据表中如果不存在非关键字段对任一候选关键字段的传递函数依赖则符合3NF。
+
+第一范式:列不可再分
+第二范式:行可以唯一区分，主键约束 
+第三范式:表的非主属性不能依赖与其他表的非主属性 外键约束
 https://blog.csdn.net/h330531987/article/details/71194540
+
+1NF:字段不可分;
+2NF:有主键，非主键字段依赖主键;
+3NF:非主键字段不能相互依赖;
+解释:
+1NF:原子性 字段不可再分,否则就不是关系数据库;
+2NF:唯一性 一个表只说明一个事物;
+3NF:每列都与主键有直接关系，不存在传递依赖;
 
 ### 14.垃圾回收器
 新生代收集器：Serial [ˈsɪriəl]、ParNew、Parallel Scavenge [ˈpærəlel] [ˈskævɪndʒ]
@@ -139,7 +189,7 @@ B.设置两个Survivor区最大的好处就是解决了碎片化。进行Minor G
 https://blog.csdn.net/zero__007/article/details/85107746
 
 ### 25.出现紧急情况后事前事中事后
-A.事前避免紧急情况
+A.事前避免紧急情况 测试
 B.事中版本回滚，服务降级，服务限流
 C.事后补偿
 
@@ -238,7 +288,7 @@ https://www.sohu.com/a/272879207_463994
 4）可预测的停顿：这是G1相对于CMS的另一个大优势，降低停顿时间是G1和ＣＭＳ共同的关注点，但Ｇ１除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为M毫秒的时间片段内，
 https://www.jianshu.com/p/9c6be3b92dc6
 
-### 36.String，Stringbuffer，StringBuilder的区别
+### 36.String，StringBuffer，StringBuilder的区别
 String不可变，StringBuffer线程安全，共有父类AbstractStringBuilder
 
 ### 37.zookeeper分布式协调服务，避免单点故障
@@ -256,9 +306,58 @@ Zab协议需要保证选举出来的Leader需要满足以下条件：
 这样做的好处是可以避免 Leader 服务器检查 Proposal 的提交和丢弃工作。
 总结就是，Leader挂了那么就新选举一个Leader，且新的Leader的zxid必须是最大的且是已提交的
 
+
+Zookeeper初始化时Leader选举投票：
+　　（1）首先第一台服务器启动，投自己一票，然后发投票信息，由于其它机器还没有启动所以它收不到反馈信息，服务器1的状态一直属于Looking。
+　　（2）服务器2启动，发现当前没有leader，投票给自己，同时与之前启动的服务器1交换结果，由于服务器2的编号大所以服务器2胜出，但此时投票数没有大于半数，所以两个服务器的状态依然是LOOKING。
+　　（3）服务器3启动，发现没有Leader，给自己投票，同时与之前启动的服务器1,2交换信息，由于服务器3的编号最大所以服务器3胜出，此时投票数正好大于半数，所以服务器3成为领导者，服务器1,2成为小弟。
+　　（4）服务器4启动，给自己投票，同时与之前启动的服务器1,2,3交换信息，尽管服务器4的编号大，但之前服务器3已经胜出，所以服务器4只能成为小弟。
+　　（5）服务器5和服务器4逻辑相同。
+
+Zookeeper如果Server3当选了Leader,他突然宕机了，那么就需要重新选Leader了。
+　　（1）Leader宕机之后，剩下的机器会自动进入选举状态，重新选举。
+   （2）选举的依据是：优先考虑数据的的版本号zxid，再考虑id。(因为zxid越大，代表该服务器的数据越新，越全）
+　　（3）由于是运行期间，因此每个服务器上的ZXID可能不同我们假设Server1的ZXID为123，而Server2的ZXID为122，Server4的ZXID为143，Sever5的ZXID为120
+　　（4）在第一轮投票中，Server1、Server2、Sever4、Server5都会投给自己，即分别产生投票(1,123),(2,122)，(4,143),(5,120)
+　　（5）然后各自将这个投票发给集群中所有机器。
+　　（6）对于投票的处理，在这个情境下Server4的ZXID为143,是最大的，显然Server4会成为Leader，其他服务器成为跟随者。
+
 https://www.jianshu.com/p/2bceacd60b8a
 
 
+### 38.tomcat优化
+1.内存调优
+2.并发调优
+3.IO优化（APR，BIO，NIO，AIO）
+4.开启线程池
+https://blog.csdn.net/qq_28109171/article/details/84256783
+
+
+### 39.mysql索引生效规则
+有联合索引 (a,b,c)
+where a=3 and b=45 and c=5 .... 这种三个索引顺序使用中间没有断点，全部发挥作用；
+where a=3 and c=5... 这种情况下b就是断点，a发挥了效果，c没有效果
+where b=3 and c=4... 这种情况下a就是断点，在a后面的索引都没有发挥作用，这种写法联合索引没有发挥任何效果；
+where b=45 and a=3 and c=5 .... 这个跟第一个一样，全部发挥作用，abc只要用上了就行，跟写的顺序无关
+
+(0)    select * from mytable where a=3 and b=5 and c=4;
+abc三个索引都在where条件里面用到了，而且都发挥了作用
+(1)    select * from mytable where  c=4 and b=6 and a=3;
+这条语句列出来只想说明 mysql没有那么笨，where里面的条件顺序在查询之前会被mysql自动优化，效果跟上一句一样
+(2)    select * from mytable where a=3 and c=7;
+a用到索引，b没有用，所以c是没有用到索引效果的
+(3)    select * from mytable where a=3 and b>7 and c=3;
+a用到了，b也用到了，c没有用到，这个地方b是范围值，也算断点，只不过自身用到了索引
+(4)    select * from mytable where b=3 and c=4;
+因为a索引没有使用，所以这里 bc都没有用上索引效果
+(5)    select * from mytable where a>4 and b=7 and c=9;
+a用到了  b没有使用，c没有使用
+(6)    select * from mytable where a=3 order by b;
+a用到了索引，b在结果排序中也用到了索引的效果，前面说了，a下面任意一段的b是排好序的
+(7)    select * from mytable where a=3 order by c;
+a用到了索引，但是这个地方c没有发挥排序效果，因为中间断点了，使用 explain 可以看到 filesort
+(8)    select * from mytable where b=3 order by a;
+b没有用到索引，排序中a也没有发挥索引效果
 
 ####  好多MySQL面试题 https://zhuanlan.zhihu.com/p/214295381
 ####  好多面试题 https://mp.weixin.qq.com/s/AI2dRngnVwL2OAEix6O2Ig
