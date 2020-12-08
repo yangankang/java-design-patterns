@@ -390,6 +390,121 @@ https://blog.csdn.net/stupid56862/article/details/93330203
 ### 42.explain的常用列说明
 https://www.cnblogs.com/tufujie/p/9413852.html
 
+### 43.分布式锁的几种实现
+https://www.cnblogs.com/barrywxx/p/11644803.html
+
+### 44.mysql的共享锁怎么加
+for update 排他锁
+lock in share mode 共享锁
+
+### 45.redis的淘汰策略
+noeviction: 不删除策略, 达到最大内存限制时, 如果需要更多内存, 直接返回错误信息。 大多数写命令都会导致占用更多的内存(有极少数会例外, 如 DEL )。
+allkeys-lru: 所有key通用; 优先删除最近最少使用(less recently used ,LRU) 的 key。
+volatile-lru: 只限于设置了 expire 的部分; 优先删除最近最少使用(less recently used ,LRU) 的 key。
+allkeys-random: 所有key通用; 随机删除一部分 key。
+volatile-random: 只限于设置了 expire 的部分; 随机删除一部分 key。
+volatile-ttl: 只限于设置了 expire 的部分; 优先删除剩余时间(time to live,TTL) 短的key。
+
+### 46.死锁的四个必要条件
+（1） 互斥条件：一个资源每次只能被一个进程使用。
+（2） 请求与保持条件：一个进程因请求资源而阻塞时，对已获得的资源保持不放。
+（3） 不可剥夺条件:进程已获得的资源，在末使用完之前，不能强行剥夺。
+（4） 循环等待条件:若干进程之间形成一种头尾相接的循环等待资源关系。
+
+### 47.慢查询优化
+https://blog.csdn.net/qq_35571554/article/details/82800463
+
+### 48.Mysql主从同步过程
+MYSQL主从同步原理：
+1） MYSQL主从同步是异步复制的过程，整个同步需要开启3线程，master上开启bin-log日志（记录数据库增、删除、修改、更新操作）；
+2） Slave开启I/O线程来请求master服务器，请求指定bin-log中position点之后的内容；
+3） Master端收到请求，Master端I/O线程响应请求，bin-log、position之后内容返给salve；
+4） Slave将收到的内容存入relay-log中继日志中，生成master.info（记录master ip、bin-log、position、用户名密码）；
+5） Slave端SQL实时监测relay-log日志有更新，解析更新的sql内容，解析成sql语句，再salve库中执行；
+6） 执行完毕之后，Slave端跟master端数据保持一致！
+
+### 49.字符串常量存储在哪个内存区域
+常量池1.6之前存储在方法区4M大小，1.7之后存储在堆区，new String()一直都在堆区
+
+### 50.HashMap的put过程
+hashmap并发问题，数据不一致和线程死锁
+https://www.cnblogs.com/captainad/p/10905184.html
+
+### 51.MySQL的幻读问题
+什么是幻读：在一次事务里，多次查询出的结果集个数不一致
+多出来的或者少的行叫做幻行
+怎么解决幻读：1.多版本并发控制MVCC 2.next-key锁(当前读)
+next-key锁原理：将当前数据行与上一条数据和下一条数据之间的间隙锁定，保证此范围内读取数据是一致的
+next-key锁包含了什么：1.记录锁，加在索引上的锁  2.间隙锁，加在索引之间的锁
+
+https://blog.csdn.net/weixin_30342639/article/details/107552255
+MVCC只的读取已提交（Read Committed）和可重复读（Repeatable Read）两个事务级别下有效。其是通过Undo日志中的版本链和ReadView一
+致性视图来实现的。MVCC就是在多个事务同时存在时，SELECT语句找寻到具体是版本链上的哪个版本，然后在找到的版本上返回其中所记录的数据的过程。
+ReadView一致性视图主要是由两部分组成：所有未提交事务的ID数组和已经创建的最大事务ID组成（实际上ReadView还有其他的字段，但不影响这里对
+MVCC的讲解）。比如：[100,200],300。事务100和200是当前未提交的事务，而事务300是当前创建的最大事务（已经提交了）。当执行SELECT语句的
+时候会创建ReadView，但是在读取已提交和可重复读两个事务级别下，生成ReadView的策略是不一样的：读取已提交级别是每执行一次SELECT语句就会
+重新生成一份ReadView，而可重复读级别是只会在第一次SELECT语句执行的时候会生成一份，后续的SELECT语句会沿用之前生成的ReadView（即使后
+面有更新语句的话，也会继续沿用）。
+
+https://blog.csdn.net/qq_33743572/article/details/107888862
+ReadView中主要包含4个比较重要的内容：Read View中活跃就是指未提交的事务
+1. m_ids：表示在生成ReadView时当前系统中活跃的读写事务的事务id列表(未提交事务)。
+2. min_trx_id：表示在生成ReadView时当前系统中活跃的读写事务中最小的事务id，也就是m_ids中的最小值。
+3. max_trx_id：表示生成ReadView时系统中应该分配给下一个事务的id值。
+4. creator_trx_id：表示生成该ReadView的快照读操作产生的事务id。
+注意max_trx_id并不是m_ids中的最大值，事务id是递增分配的。比方说现在有id为1， 2， 3这三个事务，之后id为3的事务提交了。那么一个新的
+读事务在生成ReadView时， m_ids就包括1和2， min_trx_id的值就是1，max_trx_id的值就是4。
+ReadView在生成时(读已提交每次select都会生成，可重复读第一次select生成)会记录当前数据行的最大事务id和最小事务id等等信息,在事务中读取
+数据行的版本链(undo日志)时会对比当前的事务中的ReadView。
+
+读未提交：默认什么都不做
+读已提交：使用MVCC控制，使用版本链(undo日志)和ReadView一致性视图实现，每次查询时都会创建一个ReadView视图
+可重复读：使用MVCC控制，使用版本链(undo日志)和ReadView一致性视图实现，只第一次查询时创建一个ReadView视图
+序列化：使用表锁
+
+### 52.MySQL的间隙锁导致的冲突问题
+第一种间隙锁死锁原因（条件必须有索引，解决方法：数据不删除，或使用insert into on duplicate key update）：
+有数据 1，2，7，8，9数据，然后在事务一select 5 for update时会产生间隙锁2-7，那么如果同时也有事务二select 5 for update，则双方都
+拿到了2-7之间的间隙锁，这时如果同时插入[3,6]的数据则两个事务会相互等待产生死锁。
+https://www.jianshu.com/p/2b258bfe00e5
+第二种互相死锁等待（解决方法：一个事务中一张表加锁最好一次性加完使用in）：
+例如两个用户同时投资，A用户金额随机分为2份，分给借款人(1，2)，B用户金额随机分为2份，分给借款人(2，1)，由于加锁的顺序不一样，死锁当然很
+快就出现了。对于这个问题的改进很简单，直接把所有分配到的借款人直接一次锁住就行了。
+Select * from xxx where id in (xx,xx,xx) for update
+在in里面的列表值mysql是会自动从小到大排序，加锁也是一条条从小到大加的锁
+第三种死锁原因：
+session1:select * from t3 where id=9 for update
+session2:select * from t3 where id<20 for update
+session1:insert into t3 values(7,'ae','a',now())
+Session2在等待Session1的id=9的锁，session2又持了1到8的锁（注意9到19的范围并没有被session2锁住），最后，session1在插入新行时又
+得等待session2,故死锁发生了。
+第四种死锁原因：
+session1:select * from t1 where id=1 for update
+session2:delete from t1 where id=5;
+session1:update t1 set name='qqq' where id=5
+session2:delete from t1 where id=1
+删除id=5时会给id=5的记录加上排他锁，导致相互等待
+第五种死锁原因：
+表结构：T2(id primary key,name key,pubtime key,commit);
+key(name)索引结构：(bbb->100),(hdc->1),(hdc->6),(hdc->8),(hdc->10),(yyy->4)
+key(pubtime)索引结构：(1->10),(3->4),(5->8),(10->6),(20->100),(100->1)
+session1:update t2 set comment='abc' where name='hdc';
+session2:select * from t2 where pubtime>5 for update;
+两个事务同时执行，加锁也是同时开始那么，session1加锁顺序是由索引(hdc->1),(hdc->6)开始的，而session2加锁顺序是由索引(10->6),(100->1)
+开始的，导致加锁顺序颠倒造成死锁，事务一加锁1，事务而加锁6，事务一加锁6等待，事务二加锁1等待
+第六种死锁原因：
+表结构：表dltask 主键PRIMARY KEY (id) 唯一主键UNIQUE KEY uniq_a_b_c (a, b, c)
+执行语句：delete from dltask where a=? and b=? and c=?
+InnoDB上删除一条记录，并不是真正意义上的物理删除，而是将记录标识为删除状态。(注：这些标识为删除状态的记录，后续会由后台的Purge操作进行回收，
+物理删除。但是，删除状态的记录会在索引中存放一段时间。) 在RR隔离级别下，唯一索引上满足查询条件，但是却是删除记录，如何加锁？InnoDB在此处的
+处理策略与前两种策略均不相同，或者说是前两种策略的组合：对于满足条件的删除记录，InnoDB会在记录上加next key lock X(对记录本身加X锁，同时
+锁住记录前的GAP，防止新的满足条件的记录插入。) Unique查询，三种情况，对应三种加锁策略，总结如下：
+此处，我们看到了next key锁，是否很眼熟？对了，前面死锁中事务1，事务2处于等待状态的锁，均为next key锁。明白了这三个加锁策略，其实构造一定的
+并发场景，死锁的原因已经呼之欲出。但是，还有一个前提策略需要介绍，那就是InnoDB内部采用的死锁预防策略。
+1.找到满足条件的记录，并且记录有效，则对记录加X锁，No Gap锁(lock_mode X locks rec but not gap)；
+2.找到满足条件的记录，但是记录无效(标识为删除的记录)，则对记录加next key锁(同时锁住记录本身，以及记录之前的Gap：lock_mode X);
+3.未找到满足条件的记录，则对第一个不满足条件的记录加Gap锁，保证没有满足条件的记录插入(locks gap before rec)；
+
 ####  好多MySQL面试题 https://zhuanlan.zhihu.com/p/214295381
 ####  好多面试题 https://mp.weixin.qq.com/s/AI2dRngnVwL2OAEix6O2Ig
 ####  好多面试题 https://zhuanlan.zhihu.com/p/258777225

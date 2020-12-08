@@ -190,7 +190,7 @@ mq消息队列块满了：如果消息积压在 mq 里，你很长时间都没�
 
 https://www.cnblogs.com/mfrank/p/11184929.html
 https://www.jianshu.com/p/a6460b4b155f
-六种工作模式 https://www.cnblogs.com/xyfer1018/p/11581511.html
+六种工作模式,消息模型 https://www.cnblogs.com/xyfer1018/p/11581511.html
 
 1、Work queues：多个消费端消费同一个队列中的消息，队列采用轮询的方式将消息是平均发送给消费者；
 1）一条消息只会被一个消费端接收；
