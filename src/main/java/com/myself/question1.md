@@ -505,8 +505,14 @@ InnoDB上删除一条记录，并不是真正意义上的物理删除，而是�
 2.找到满足条件的记录，但是记录无效(标识为删除的记录)，则对记录加next key锁(同时锁住记录本身，以及记录之前的Gap：lock_mode X);
 3.未找到满足条件的记录，则对第一个不满足条件的记录加Gap锁，保证没有满足条件的记录插入(locks gap before rec)；
 
+
+#### 53.Netty的EventLoop,重要
+https://blog.csdn.net/qq_24313635/article/details/80989450
+
 ####  好多MySQL面试题 https://zhuanlan.zhihu.com/p/214295381
 ####  好多面试题 https://mp.weixin.qq.com/s/AI2dRngnVwL2OAEix6O2Ig
 ####  好多面试题 https://zhuanlan.zhihu.com/p/258777225
 ####  好多redis面试题 https://zhuanlan.zhihu.com/p/263028782
 ####  好多MQ面试题 https://zhuanlan.zhihu.com/p/260351128
+重要
+####  好多dubbo面试题 https://blog.csdn.net/moakun/article/details/82919804

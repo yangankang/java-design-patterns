@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatisdemo.mapper.UserLoginMapper">
+    <resultMap id="user" type="com.mybatisdemo.model.UserLogin">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+    </resultMap>
+
+    <select id="queryAll" resultMap="user">
+        <if test="true">
+            select * from t_user limit 0,10
+        </if>
+    </select>
+
+    <insert id="add" parameterType="com.mybatisdemo.model.UserLogin">
+        insert into t_user (user_name,password) values (#{userName},#{password})
+    </insert>
+
+    <select id="queryByName" resultType="com.mybatisdemo.model.UserLogin">
+        select * from t_user where user_name = #{userName}
+    </select>
+</mapper>
