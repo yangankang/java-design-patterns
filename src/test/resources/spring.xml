@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+       profile="dev">
+    <bean id="demoBean" class="com.springdemo.SpringDemoBean">
+        <property name="springCircleBean" ref="demoCirBean"></property>
+    </bean>
+    <bean id="demoCirBean" class="com.springdemo.SpringCircleBean">
+        <property name="springDemoBean" ref="demoBean"></property>
+    </bean>
+</beans>
