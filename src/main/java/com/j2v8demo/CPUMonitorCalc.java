@@ -1,5 +1,6 @@
 package com.j2v8demo;
 
+import java.io.IOException;
 import java.lang.management.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -86,15 +87,20 @@ public class CPUMonitorCalc {
         for (int i = 0; i < 2; i++) {
             new Thread(() -> {
                 while (true) {
-                    long bac = 1000000;
-                    bac = bac >> 1;
-                    if (System.currentTimeMillis() % 38 == 0
-                            || System.currentTimeMillis() % 28 == 0) {
-                        try {
-                            Thread.sleep(1);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+//                    long bac = 1000000;
+//                    bac = bac >> 1;
+//                    if (System.currentTimeMillis() % 38 == 0
+//                            || System.currentTimeMillis() % 28 == 0) {
+//                        try {
+//                            Thread.sleep(1);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+                    try {
+                        J2V8Main.run();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }).start();

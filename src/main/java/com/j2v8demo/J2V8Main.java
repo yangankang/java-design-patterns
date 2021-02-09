@@ -14,6 +14,10 @@ public class J2V8Main {
     }
 
     public static void main(String[] args) throws IOException {
+        J2V8Main.run();
+    }
+
+    public static void run() throws IOException {
         String js = IOUtils.toString(J2V8Main.class.getResourceAsStream("/js/j2v8.js"));
         V8 runtime = V8.createV8Runtime();
         J2V8Main j2V8Main = new J2V8Main();
@@ -22,7 +26,8 @@ public class J2V8Main {
         v8Object.registerJavaMethod(j2V8Main, "add", "add", new Class[]{int.class, int.class});
         long time = System.currentTimeMillis();
         for (int i = 0; i < 100000; i++) {
-            int result = runtime.executeIntegerScript(js);
+            runtime.executeScript(js);
+            // int result = runtime.executeIntegerScript(js);
             // System.out.println("Test JS result = " + result);
             // int i1 = 10, i2 = 20;
             // j2V8Main.add(i1, i2);
